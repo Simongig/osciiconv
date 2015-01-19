@@ -8,17 +8,24 @@ class Images(object):
 
 	def __init__(self):
 		self.OriginalImage = None
+		self.EditedImage   = None
 		self.NewImage      = None
 #-------------------------------------------------------------------------------
 	def load_image(self, path):
 		self.OriginalImage = None
-		self.OriginalImage = cv2.imread(path, cv2.CV_LOAD_IMAGE_GRAYSCALE)
+		self.OriginalImage = cv2.imread(path)
 		if (self.OriginalImage is not None):
 			self.OriginalImage = cv2.medianBlur(self.OriginalImage,5)
+			self.EditedImage = cv2.cvtColor(self.OriginalImage, cv2.COLOR_BGR2GRAY)
 			return True
 		return False
 
 	def show_edited(self):
+		cv2.namedWindow("Oscilloscope", 1)
+		cv2.imshow("Oscilloscope", self.EditedImage)
+		cv2.waitKey(0)
+
+	def show_original(self):
 		cv2.namedWindow("Oscilloscope", 1)
 		cv2.imshow("Oscilloscope", self.OriginalImage)
 		cv2.waitKey(0)

@@ -6,7 +6,7 @@ img = images.Images()
 imgedit = imgedit.ImageEdit()
 
 if(img.load_image('test.jpg')):
-	img.OriginalImage = imgedit.thresholding(img.OriginalImage)
-	img.OriginalImage = imgedit.lines(img.OriginalImage)
-	img.show_edited()
+	imgedit.process_image(img)
+	img.show_original()
+	img.save_edited("result.jpg")
 	print "success"
