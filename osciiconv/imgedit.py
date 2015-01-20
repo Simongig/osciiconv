@@ -39,27 +39,37 @@ class ImageEdit:
 			# Add center in new image/array
 			centers[y][x] = [255]
 
+
 		return centers
 
 
 	def lines(self, images, centers):
+#		contours, hierarchy = cv2.findContours(centers, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+#		cv2.drawContours(centers, contours, -1, (50,255,50), 3)
 
 		cv2.namedWindow("Oscilloscope", 1)
 		cv2.imshow("Oscilloscope", centers)
 		cv2.waitKey(0)
 
-		lines = cv2.HoughLines(centers,1,np.pi/180,200)
-		for rho,theta in lines:
-			a = np.cos(theta)
-			b = np.sin(theta)
-			x0 = a*rho
-			y0 = b*rho
-			x1 = int(x0 + 1000*(-b))
-			y1 = int(y0 + 1000*(a))
-			x2 = int(x0 - 1000*(-b))
-			y2 = int(y0 - 1000*(a))
+		#lines = cv2.HoughLinesP(centers, 30, np.pi/180 * 1, 40, minLineLength=100, maxLineGap=1000)
+		lines = cv2.HoughLines(centers, 40, float(np.pi/180 * 0.5), 35)#, srn=100, stn=0)
+		for line in lines:
+			#for x1,y1,x2,y2 in line:
+			for rho, theta in line:
 
-			cv2.line(images.OriginalImage, (x1,y1), (x2,y2), (0,0,255), 2)
+				#print x1, x2, y1, y2
+				#if np.tan((x2-x1)/(y2-y1)) < (np.pi/180 * 10):
+				#	cv2.line(images.OriginalImage, (x1,y1), (x2,y2), (255,0,255), 2)
+
+				#if np.abs(theta) < (np.pi/180 * 10):
+				a = np.cos(theta)
+				b = np.sin(theta)
+
+				x0 = a*rho
+				y0 = b*rho
+
+				cv2.line(images.OriginalImage, (int(x0 + 10000*b + 0.5), int(y0 + 10000*a + 0.5)), (int(x0 + 10000*b + 0.5), int(y0 - 10000*a)), (255, 0, 255), 2)
+
 
 
 	def transform(self, images):
