@@ -1,7 +1,11 @@
 # coding=UTF-8
 
 import cv2
-import numpy as np
+import time
+
+
+mouse_positions = []
+
 
 class Images(object):
 	"""Class contains original and new image"""
@@ -10,6 +14,9 @@ class Images(object):
 		self.OriginalImage = None
 		self.EditedImage   = None
 		self.NewImage      = None
+
+		self.contours = None
+		self.centers  = None
 #-------------------------------------------------------------------------------
 	def load_image(self, path):
 		self.OriginalImage = None
@@ -20,25 +27,31 @@ class Images(object):
 			return True
 		return False
 
-	def show_edited(self):
-		cv2.namedWindow("Oscilloscope", 1)
-		cv2.imshow("Oscilloscope", self.EditedImage)
-		cv2.waitKey(0)
 
-	def show_original(self):
-		cv2.namedWindow("Oscilloscope", 1)
-		cv2.imshow("Oscilloscope", self.OriginalImage)
-		cv2.waitKey(0)
+	def show_image(self, image, wait=True, locate_clicks=False):
+		cv2.namedWindow("Oscilloscope", cv2.WINDOW_NORMAL)
+		if locate_clicks:
+			cv2.setMouseCallback("Oscilloscope", locate_mouse)
+		cv2.imshow("Oscilloscope", image)
+		if wait:
+			cv2.waitKey(0)
 
-	def show_new(self):
-		cv2.namedWindow("Oscilloscope", 1)
-		cv2.imshow("Oscilloscope", self.NewImage)
-		cv2.waitKey(0)
+	def get_coordinate(self):
+		while len(mouse_positions) is 0:
+			if cv2.waitKey(100) is not -1:
+				return False
 
-	def save_edited(self, name):
-		cv2.imwrite(name, self.OriginalImage)
+		return mouse_positions.pop()
 
-	def save_new(self, name):
-		cv2.imwrite(name, self.NewImage)
+	def close_windows(self):
+		cv2.destroyAllWindows()
 
+	def save_image(self, image, filename):
+		cv2.imwrite(filename, image)
+
+
+
+def locate_mouse(event, x, y, flags, param):
+	if event == cv2.EVENT_LBUTTONDOWN:
+		mouse_positions.append((x, y))
 
