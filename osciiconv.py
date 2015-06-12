@@ -2,25 +2,30 @@ from osciiconv import ImageEdit
 from osciiconv import Images
 
 import numpy as np
+import cv2
 
 
-def main():
+def convert(path = 'test.jpg' ):
 	img = Images()
 	imgedit = ImageEdit()
 
-	if(img.load_image('test.jpg')):
+	if(img.load_image(path)):
 		img.show_image(img.OriginalImage, False)
 		imgedit.process_image(img)
 		img.show_image(img.OriginalImage, False, True)
 
 		rect = get_rect(img, imgedit)
 		imgedit.transform(img, rect[0],rect[1],rect[2],rect[3])
-		img.show_image(img.EditedImage)
+		img.EditedImage = (255-img.EditedImage)
+		img.show_image(img.EditedImage, False, True)
 
+		img.EditedImage = cv2.cvtColor(img.EditedImage, cv2.COLOR_GRAY2BGR)
 		img.save_image(img.EditedImage, "result.jpg")
 
+		print img.get_height(img.EditedImage)
+
 		img.close_windows()
-		print "success"
+		return img
 
 
 def get_rect(img, imgedit):
@@ -39,4 +44,4 @@ def get_rect(img, imgedit):
 
 
 if __name__ == '__main__':
-	main()
+	convert()

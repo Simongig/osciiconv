@@ -4,3 +4,4 @@ import cv2
 
 
 class ImageScan(object):
+	None

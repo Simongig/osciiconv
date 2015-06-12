@@ -1,10 +1,12 @@
 # coding=UTF-8
 
 import cv2
-import time
+import copy
 
 
-mouse_positions = []
+class glob(object):
+	mouse_positions = []
+	mouse_pos_noclick = (0,0)
 
 
 class Images(object):
@@ -37,11 +39,26 @@ class Images(object):
 			cv2.waitKey(0)
 
 	def get_coordinate(self):
-		while len(mouse_positions) is 0:
+		while len(glob.mouse_positions) is 0:
 			if cv2.waitKey(100) is not -1:
 				return False
 
-		return mouse_positions.pop()
+		return glob.mouse_positions.pop()
+
+	def get_height(self, image):
+		while len(glob.mouse_positions) is 0:
+			# Bild kopieren
+			imgcp = copy.copy(image)
+			# Höhe zeichnen
+			cv2.line(imgcp, (0,glob.mouse_pos_noclick[1]), (1000,glob.mouse_pos_noclick[1]), (255,50,50), 1)
+			# Bild zeichnen
+			cv2.imshow("Oscilloscope", imgcp)
+
+			if cv2.waitKey(100) is not -1:
+				return False
+
+		self.save_image(imgcp, "guckmal.png")
+		return glob.mouse_positions.pop()
 
 	def close_windows(self):
 		cv2.destroyAllWindows()
@@ -53,5 +70,7 @@ class Images(object):
 
 def locate_mouse(event, x, y, flags, param):
 	if event == cv2.EVENT_LBUTTONDOWN:
-		mouse_positions.append((x, y))
+		glob.mouse_positions.append((x, y))
+	else:
+		glob.mouse_pos_noclick = (x,y)
 
